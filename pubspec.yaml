@@ -1,0 +1,17 @@
+name: fk_logs
+description: Loggy extension to use 'developer.log' with pretty printer in Flutter
+version: 1.0.0
+homepage: http://github.com/flutter-fast-kit/fk_logs
+repository: http://github.com/flutter-fast-kit/fk_logs
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.17.0 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  loggy: ^1.0.3
+  rxdart: '>0.1.0 <1.0.0'
+  stack_trace: ^1.9.6
+  dio: '>=3.0.0 <4.0.0'
