@@ -15,9 +15,9 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
     this.errorLevel,
   });
 
-  final LogLevel requestLevel;
-  final LogLevel responseLevel;
-  final LogLevel errorLevel;
+  final LogLevel? requestLevel;
+  final LogLevel? responseLevel;
+  final LogLevel? errorLevel;
 
   /// Print request header [Options.headers]
   final bool requestHeader;
@@ -38,7 +38,7 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
   final int maxWidth;
 
   @override
-  Future onRequest(RequestOptions options) async {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     _requestIndex++;
     options.extra.addAll(
         {'requestIdx': _requestIndex.toString().padLeft(3, '0'), 'requestTime': DateTime.now().millisecondsSinceEpoch});
@@ -46,9 +46,7 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
     if (requestHeader) {
       _prettyPrintObject(options.queryParameters, header: 'Query Parameters');
       final requestHeaders = <String, dynamic>{};
-      if (options.headers != null) {
-        requestHeaders.addAll(options.headers);
-      }
+      requestHeaders.addAll(options.headers);
       requestHeaders['contentType'] = options.contentType?.toString();
       requestHeaders['responseType'] = options.responseType?.toString();
       requestHeaders['followRedirects'] = options.followRedirects;
@@ -71,31 +69,31 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
     }
 
     _commit(requestLevel ?? LogLevel.info);
-    return options;
+    super.onRequest(options, handler);
   }
 
   @override
-  Future onError(DioError err) async {
+  void onError(DioError err, ErrorInterceptorHandler handler) {
     if (error) {
-      if (err.type == DioErrorType.RESPONSE) {
+      if (err.type == DioErrorType.response) {
         logPrint(
-            '<<< DioError │ ${err?.request?.method} │ ${err?.response?.statusCode} ${err?.response?.statusMessage} │ ${err?.response?.request?.uri?.toString()}');
-        if (err.response != null && err.response.data != null) {
-          _prettyPrintObject(err.response.data, header: 'DioError │ ${err.type}');
+            '<<< DioError │ ${err.requestOptions.method} │ ${err.response?.statusCode} ${err.response?.statusMessage} │ ${err.requestOptions.uri.toString()}');
+        if (err.response != null && err.response?.data != null) {
+          _prettyPrintObject(err.response?.data, header: 'DioError │ ${err.type}');
         }
       } else {
-        logPrint('<<< DioError (No response) │ ${err?.request?.method} │ ${err?.request?.uri?.toString()}');
+        logPrint('<<< DioError (No response) │ ${err.requestOptions.method} │ ${err.requestOptions.uri.toString()}');
         logPrint('╔ ERROR');
         logPrint('║  ${err.message.replaceAll('\n', '\n║  ')}');
         _printLine(pre: '╚');
       }
     }
     _commit(errorLevel ?? LogLevel.error);
-    return err;
+    super.onError(err, handler);
   }
 
   @override
-  Future onResponse(Response response) async {
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
     _printResponseHeader(response);
     if (responseHeader) {
       _prettyPrintObject(response.headers, header: 'Headers');
@@ -106,7 +104,7 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
     }
 
     _commit(responseLevel ?? LogLevel.info);
-    return response;
+    super.onResponse(response, handler);
   }
 
   void _printResponse(Response response) {
@@ -117,7 +115,7 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
     }
   }
 
-  void _prettyPrintObject(dynamic data, {String header}) {
+  void _prettyPrintObject(dynamic data, {String? header}) {
     String _value;
 
     try {
@@ -136,18 +134,18 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
   }
 
   void _printResponseHeader(Response response) {
-    final uri = response?.request?.uri;
-    final method = response.request.method;
-    final requestTime = response.request.extra['requestTime'];
-    final requestIdx = response.request.extra['requestIdx'];
+    final uri = response.requestOptions.uri;
+    final method = response.requestOptions.method;
+    final requestTime = response.requestOptions.extra['requestTime'];
+    final requestIdx = response.requestOptions.extra['requestIdx'];
     final times = DateTime.now().millisecondsSinceEpoch - requestTime;
     logPrint(
         '#$requestIdx 👈<<< Response │ $method │ ${response.statusCode} ${response.statusMessage} | $times ms │ ${uri.toString()}');
   }
 
   void _printRequestHeader(RequestOptions options) {
-    final uri = options?.uri;
-    final method = options?.method;
+    final uri = options.uri;
+    final method = options.method;
     final requestIdx = options.extra['requestIdx'];
     logPrint('#$requestIdx 👉>>> Request │ $method │ ${uri.toString()}');
   }
@@ -157,6 +155,7 @@ class LoggyDioInterceptor extends Interceptor with DioLogs {
       );
 
   final StringBuffer _value = StringBuffer();
+
   void logPrint(String value) {
     if (_value.isEmpty) {
       _value.write(value);

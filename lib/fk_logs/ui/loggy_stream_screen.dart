@@ -1,7 +1,7 @@
 part of fk_logs;
 
 class LoggyStreamScreen extends StatefulWidget {
-  const LoggyStreamScreen({Key key}) : super(key: key);
+  const LoggyStreamScreen({Key? key}) : super(key: key);
 
   @override
   _LoggyStreamScreenState createState() => _LoggyStreamScreenState();
@@ -31,10 +31,12 @@ class _LoggyStreamScreenState extends State<LoggyStreamScreen> {
                         ),
                       )
                       .toList(),
-                  onChanged: (LogLevel level) {
-                    setState(() {
-                      _level = level;
-                    });
+                  onChanged: (LogLevel? level) {
+                    if (level != null) {
+                      setState(() {
+                        _level = level;
+                      });
+                    }
                   },
                   icon: const Icon(Icons.filter_list_sharp),
                   underline: const SizedBox.shrink(),

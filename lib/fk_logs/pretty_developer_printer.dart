@@ -30,13 +30,14 @@ class PrettyDeveloperPrinter extends LogPrinter {
       message = '$_time $_logLevel $_prefix $_callerFrame: ${record.message}';
     } else {
       final lastFrame = frames.firstWhere((v) {
-      return !v.library.startsWith('dart:') &&
-             v.package != 'loggy' &&
-             v.package != 'fk_logs' &&
-             v.package != 'fk_logs_dio' &&
-             !v.library.contains('pretty_developer_printer.dart');
+        return !v.library.startsWith('dart:') &&
+            v.package != 'loggy' &&
+            v.package != 'fk_logs' &&
+            v.package != 'fk_logs_dio' &&
+            !v.library.contains('pretty_developer_printer.dart');
       });
-      message = '$_time $_logLevel $_prefix $_callerFrame ${lastFrame.member}(${lastFrame.line}:${lastFrame.column}): ${record.message}';
+      message =
+          '$_time $_logLevel $_prefix $_callerFrame ${lastFrame.member}(${lastFrame.line}:${lastFrame.column}): ${record.message}';
     }
 
     developer.log(
@@ -52,7 +53,7 @@ class PrettyDeveloperPrinter extends LogPrinter {
   }
 
   /// Get prefix for level
-  String levelPrefix(LogLevel level) {
+  String? levelPrefix(LogLevel level) {
     return _levelPrefixes[level];
   }
 }

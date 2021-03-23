@@ -15,19 +15,19 @@ class Log {
     );
   }
 
-  static void d(String msg, {dynamic error, StackTrace stackTrace}) {
+  static void d(String msg, {dynamic error, StackTrace? stackTrace}) {
     _logger.debug(msg, error, stackTrace);
   }
 
-  static void i(String msg, {dynamic error, StackTrace stackTrace}) {
+  static void i(String msg, {dynamic error, StackTrace? stackTrace}) {
     _logger.info(msg, error, stackTrace);
   }
 
-  static void w(String msg, {dynamic error, StackTrace stackTrace}) {
+  static void w(String msg, {dynamic error, StackTrace? stackTrace}) {
     _logger.warning(msg, error, stackTrace);
   }
 
-  static void e(String msg, {dynamic error, StackTrace stackTrace}) {
+  static void e(String msg, {dynamic error, StackTrace? stackTrace}) {
     _logger.error(msg, error, stackTrace);
   }
 }

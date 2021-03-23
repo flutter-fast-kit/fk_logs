@@ -20,15 +20,14 @@ class WrongPrinterException implements Exception {
 class LoggyStreamWidget extends StatelessWidget {
   const LoggyStreamWidget({
     this.logLevel = LogLevel.all,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   final LogLevel logLevel;
 
   @override
   Widget build(BuildContext context) {
-    final StreamPrinter _printer = Loggy.currentPrinter is StreamPrinter ? Loggy.currentPrinter : null;
-
+    final LogPrinter _printer = Loggy.currentPrinter is StreamPrinter ? Loggy.currentPrinter : null;
     if (_printer == null) {
       throw WrongPrinterException();
     }
@@ -38,7 +37,7 @@ class LoggyStreamWidget extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: StreamBuilder<List<LogRecord>>(
-              stream: _printer.logRecord,
+              stream: (_printer as StreamPrinter).logRecord,
               builder: (BuildContext context, AsyncSnapshot<List<LogRecord>> records) {
                 if (!records.hasData) {
                   return Container();
@@ -46,7 +45,7 @@ class LoggyStreamWidget extends StatelessWidget {
 
                 return ListView(
                   reverse: true,
-                  children: records.data
+                  children: records.data!
                       .where((LogRecord record) => record.level.priority >= logLevel.priority)
                       .map((LogRecord record) => _LoggyItemWidget(record))
                       .toList(),
@@ -61,7 +60,7 @@ class LoggyStreamWidget extends StatelessWidget {
 }
 
 class _LoggyItemWidget extends StatelessWidget {
-  const _LoggyItemWidget(this.record, {Key key}) : super(key: key);
+  const _LoggyItemWidget(this.record, {Key? key}) : super(key: key);
 
   final LogRecord record;
 
@@ -83,7 +82,7 @@ class _LoggyItemWidget extends StatelessWidget {
               Flexible(
                 child: Text(
                   '${record.level.name.toUpperCase()} - $_time',
-                  style: Theme.of(context).textTheme.bodyText2.copyWith(
+                  style: Theme.of(context).textTheme.bodyText2!.copyWith(
                         color: logColor,
                         fontWeight: FontWeight.w700,
                         fontSize: 12.0,
@@ -92,7 +91,7 @@ class _LoggyItemWidget extends StatelessWidget {
               ),
               Text(
                 record.loggerName,
-                style: Theme.of(context).textTheme.bodyText2.copyWith(
+                style: Theme.of(context).textTheme.bodyText2!.copyWith(
                       color: logColor,
                       fontWeight: FontWeight.w400,
                       fontSize: 12.0,
@@ -105,7 +104,7 @@ class _LoggyItemWidget extends StatelessWidget {
           ),
           Text(
             record.message,
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
                   color: logColor,
                   fontWeight: _getTextWeight(),
                   fontSize: 16.0,
