@@ -27,7 +27,7 @@ class LoggyStreamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LogPrinter _printer = Loggy.currentPrinter is StreamPrinter ? Loggy.currentPrinter : null;
+    final LogPrinter? _printer = Loggy.currentPrinter is StreamPrinter ? Loggy.currentPrinter : null;
     if (_printer == null) {
       throw WrongPrinterException();
     }
