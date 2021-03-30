@@ -71,14 +71,13 @@ class _StackList extends StatelessWidget {
             final List<String> _value = stackTraceLine.replaceAll(RegExp(' +'), '  ').replaceAll(')', '').split('(');
 
             /// Lines that have no connection to the app will be different color.
-            final bool _isFlutter =
-                (_value.last ?? '').startsWith('package:flutter') || (_value.last ?? '').startsWith('dart:');
+            final bool _isFlutter = (_value.last).startsWith('package:flutter') || (_value.last).startsWith('dart:');
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  _value.first ?? '',
+                  _value.first,
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.headline6!.copyWith(
                         color: _isFlutter ? Colors.blueGrey : Colors.redAccent,
@@ -87,7 +86,7 @@ class _StackList extends StatelessWidget {
                       ),
                 ),
                 Text(
-                  _value.last ?? '',
+                  _value.last,
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.subtitle1!.copyWith(
                         color: _isFlutter ? Colors.blueGrey : Colors.redAccent,
